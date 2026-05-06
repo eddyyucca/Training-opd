@@ -15,6 +15,7 @@ class EmployeeController extends Controller
         $search = trim((string) $request->string('search'));
         $department = trim((string) $request->string('department'));
         $status = $request->string('status')->toString();
+        $type = $request->string('type')->toString();
 
         $filteredQuery = $this->employeeQuery()
             ->when($search !== '', function ($query) use ($search) {
@@ -30,7 +31,8 @@ class EmployeeController extends Controller
                 });
             })
             ->when($department !== '', fn ($query) => $query->where('department', $department))
-            ->when($status !== '', fn ($query) => $query->where('is_active', $status === 'active'));
+            ->when($status !== '', fn ($query) => $query->where('is_active', $status === 'active'))
+            ->when($type !== '', fn ($query) => $query->where('is_external', $type === 'external'));
 
         $employees = (clone $filteredQuery)
             ->orderBy('name')
@@ -51,6 +53,7 @@ class EmployeeController extends Controller
             'search' => $search,
             'department' => $department,
             'status' => $status,
+            'type' => $type,
             'totalEmployees' => $totalEmployees,
             'activeEmployees' => $activeEmployees,
             'departmentCount' => $departmentCount,

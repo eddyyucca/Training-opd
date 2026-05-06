@@ -22,7 +22,7 @@
             </div>
         </div>
         <div class="card-body">
-            <form method="GET" class="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(180px,0.7fr)_minmax(180px,0.7fr)_auto]">
+            <form method="GET" class="grid gap-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(160px,0.6fr)_minmax(160px,0.6fr)_minmax(140px,0.5fr)_auto]">
                 <div>
                     <label for="employee-search">Search</label>
                     <input id="employee-search" type="text" name="search" value="{{ $search }}" class="form-control" placeholder="Search by ID, name, department, WhatsApp, or email">
@@ -42,6 +42,14 @@
                         <option value="">All Statuses</option>
                         <option value="active" @selected($status === 'active')>Active</option>
                         <option value="inactive" @selected($status === 'inactive')>Inactive</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="employee-type">Type</label>
+                    <select id="employee-type" name="type" class="form-control no-enhance">
+                        <option value="">All Types</option>
+                        <option value="internal" @selected(($type ?? '') === 'internal')>Internal</option>
+                        <option value="external" @selected(($type ?? '') === 'external')>Eksternal</option>
                     </select>
                 </div>
                 <div class="flex items-end gap-3">
@@ -97,10 +105,15 @@
                         <tbody>
                         @forelse ($employees as $employee)
                             <tr>
-                                <td><span class="table-main">{{ $employee->nik }}</span></td>
+                                <td><span class="table-main">{{ $employee->nik ?: '-' }}</span></td>
                                 <td>
                                     <div class="table-stack">
-                                        <span class="table-main">{{ $employee->name }}</span>
+                                        <span class="table-main flex items-center gap-2">
+                                            {{ $employee->name }}
+                                            @if ($employee->is_external)
+                                                <span class="badge badge-warning" style="font-size:10px;padding:2px 7px">Eksternal</span>
+                                            @endif
+                                        </span>
                                         <span class="table-sub">{{ $employee->company ?: 'Company not set' }}</span>
                                     </div>
                                 </td>
@@ -145,11 +158,16 @@
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0">
                                 <h4 class="truncate text-sm font-extrabold text-slate-900">{{ $employee->name }}</h4>
-                                <p class="mt-1 text-xs text-slate-500">{{ $employee->nik }} • {{ $employee->company ?: 'Company not set' }}</p>
+                                <p class="mt-1 text-xs text-slate-500">{{ $employee->nik ?: '-' }} • {{ $employee->company ?: 'Company not set' }}</p>
                             </div>
-                            <span class="badge badge-{{ $employee->is_active ? 'success' : 'secondary' }}">
-                                {{ $employee->is_active ? 'Active' : 'Inactive' }}
-                            </span>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="badge badge-{{ $employee->is_active ? 'success' : 'secondary' }}">
+                                    {{ $employee->is_active ? 'Active' : 'Inactive' }}
+                                </span>
+                                @if ($employee->is_external)
+                                    <span class="badge badge-warning" style="font-size:10px">Eksternal</span>
+                                @endif
+                            </div>
                         </div>
                         <div class="mt-4 grid gap-3 sm:grid-cols-2">
                             <div class="detail-item">

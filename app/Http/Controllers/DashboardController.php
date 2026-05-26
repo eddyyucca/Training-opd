@@ -68,15 +68,15 @@ class DashboardController extends Controller
 
         $genderSummary = (clone $summaryQuery)
             ->selectRaw("
-                COALESCE(NULLIF(employees.gender, ''), 'Unknown') as grouping,
+                COALESCE(NULLIF(employees.gender, ''), 'Unknown') as group_label,
                 SUM(trainings.hours) as total_hours,
                 COUNT(DISTINCT employees.id) as employee_count
             ")
-            ->groupBy('grouping')
-            ->orderByRaw("CASE grouping WHEN 'Male' THEN 1 WHEN 'Female' THEN 2 ELSE 3 END")
+            ->groupBy('group_label')
+            ->orderByRaw("CASE group_label WHEN 'Male' THEN 1 WHEN 'Female' THEN 2 ELSE 3 END")
             ->get()
             ->map(fn ($item) => [
-                'label' => $item->grouping,
+                'label' => $item->group_label,
                 'total_hours' => (float) $item->total_hours,
                 'employee_count' => (int) $item->employee_count,
                 'average_hours' => $item->employee_count > 0 ? (float) $item->total_hours / $item->employee_count : 0,
@@ -84,13 +84,13 @@ class DashboardController extends Controller
 
         $positionSummary = (clone $summaryQuery)
             ->selectRaw("
-                COALESCE(NULLIF(employees.job_level_group, ''), 'Staff & Non Staff') as grouping,
+                COALESCE(NULLIF(employees.job_level_group, ''), 'Staff & Non Staff') as group_label,
                 SUM(trainings.hours) as total_hours,
                 COUNT(DISTINCT employees.id) as employee_count
             ")
-            ->groupBy('grouping')
+            ->groupBy('group_label')
             ->orderByRaw("
-                CASE grouping
+                CASE group_label
                     WHEN 'Senior Management' THEN 1
                     WHEN 'Manager, Asst Manager, & Supervisor' THEN 2
                     ELSE 3
@@ -98,7 +98,7 @@ class DashboardController extends Controller
             ")
             ->get()
             ->map(fn ($item) => [
-                'label' => $item->grouping,
+                'label' => $item->group_label,
                 'total_hours' => (float) $item->total_hours,
                 'employee_count' => (int) $item->employee_count,
                 'average_hours' => $item->employee_count > 0 ? (float) $item->total_hours / $item->employee_count : 0,
@@ -106,17 +106,17 @@ class DashboardController extends Controller
 
         $departmentSummary = (clone $summaryQuery)
             ->selectRaw("
-                COALESCE(NULLIF(employees.department, ''), 'Belum Diisi') as grouping,
+                COALESCE(NULLIF(employees.department, ''), 'Belum Diisi') as group_label,
                 SUM(trainings.hours) as total_hours,
                 COUNT(DISTINCT employees.id) as employee_count,
                 COUNT(employee_training.training_id) as participation_count
             ")
-            ->groupBy('grouping')
+            ->groupBy('group_label')
             ->orderByDesc('total_hours')
-            ->orderBy('grouping')
+            ->orderBy('group_label')
             ->get()
             ->map(fn ($item) => [
-                'label' => $item->grouping,
+                'label' => $item->group_label,
                 'total_hours' => (float) $item->total_hours,
                 'employee_count' => (int) $item->employee_count,
                 'participation_count' => (int) $item->participation_count,
@@ -296,17 +296,17 @@ class DashboardController extends Controller
 
         $departmentSummary = (clone $summaryQuery)
             ->selectRaw("
-                COALESCE(NULLIF(employees.department, ''), 'Belum Diisi') as grouping,
+                COALESCE(NULLIF(employees.department, ''), 'Belum Diisi') as group_label,
                 SUM(trainings.hours) as total_hours,
                 COUNT(DISTINCT employees.id) as employee_count,
                 COUNT(employee_training.training_id) as participation_count
             ")
-            ->groupBy('grouping')
+            ->groupBy('group_label')
             ->orderByDesc('total_hours')
-            ->orderBy('grouping')
+            ->orderBy('group_label')
             ->get()
             ->map(fn ($item) => [
-                'label' => $item->grouping,
+                'label' => $item->group_label,
                 'total_hours' => (float) $item->total_hours,
                 'employee_count' => (int) $item->employee_count,
                 'participation_count' => (int) $item->participation_count,
